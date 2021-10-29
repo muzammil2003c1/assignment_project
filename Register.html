@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link rel="stylesheet" href="stylesheet.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    
+
+</head>
+  <body>
+    <div ng-app="crud" ng-controller="formcontroller" ng-init="datarecive();btntext='Register'">
+        
+    <form action="">
+        <div class="container">
+          <h1>Register</h1>
+          <p>Please fill the form to register your self.</p>
+          <hr>
+      
+          <label for="email"><b>Student Name</b></label>
+          <input type="text" placeholder="Enter Name" ng-model="Name"  id="Name" required>
+      
+          <label for="email"><b>Student Email</b></label>
+          <input type="email" placeholder="Enter Email" ng-model="Email"  id="Email" required>
+         
+          <label for="fees"><b>Student Fees</b></label>
+          <input type="text" placeholder="Student Fees " ng-model="Fees" id="Fees"   required>
+
+          <label for="batch"><b>Student Batch Code</b></label>
+          <input type="text" placeholder="Student Batch Code" ng-model="Batch" id="batch"   required>
+          <hr>
+      
+          <p>By registering your self you agree to our <a href="#">Terms & Privacy</a>.</p>
+          <button type="submit" class="registerbtn" ng-click="insert()">{{ btntext }}</button>
+        </div>
+      
+        <div class="container signin">
+          <p>Already have an registration? <a href="#">Sign in</a>.</p>
+        </div>
+        {{ msggaya }}
+      </form>
+      <table class="table table-border table-striped">
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Fees</th>
+          <th>Batch</th>
+          <th>Delete</th>
+          <th>Edit</th>
+      </tr>
+
+      <tr ng-repeat="z in mydata">
+          <td> {{z.Id}} </td>
+          <td> {{z.Name}} </td>
+          <td> {{z.Email}} </td>
+          <td> {{z.Fees}} </td>
+          <td> {{z.Batch}} </td>
+          <td ng-click="deletedata(z.Id)">Delete</td>
+          <td ng-click="edit(z.Id,z.Name,z.Email,z.Fees,z.Batch)">Edit</td>
+      </tr>
+    </table>
+
+      
+    </div>
+    
+
+    <script>
+        var dataupload = angular.module("crud",[]);
+        dataupload.controller("formcontroller",function($scope,$http){
+
+        $scope.insert = function(){
+            if ($scope.btntext == "Register") 
+            {
+                $http.post(
+                "working.php",
+                {
+                    "studentname" : $scope.Name,
+                    "studentemail" : $scope.Email,
+                    "studentfees" : $scope.Fees,
+                    "studentbatch" : $scope.Batch,
+                }
+            )
+             .then(function($response){
+                 $scope.msggaya = $response.data.msg;
+             })
+            }
+            else{
+                $http.post(
+                "edit.php",
+                {
+                    "studentname" : $scope.Name,
+                    "studentemail" : $scope.Email,
+                    "studentfees" : $scope.Fees,
+                    "studentbatch" : $scope.Batch,
+                    "userid"  : $scope.userid
+                }
+            )
+             .then(function($response){
+                 $scope.msggaya = $response.data.msg;
+             })
+            }
+            
+        };
+        $scope.datarecive = function(){
+            $http.get("fetchdata.php").then(function($response)
+            {
+                $scope.mydata = $response.data;
+
+            })
+        }
+        $scope.deletedata = function(id)
+        {
+           $http.post("delete.php",{
+                "userid" : id
+           }) 
+                .then(function($response){
+                 $scope.msggaya = $response.data.msg;
+                 $scope.datarecive();
+           })
+        }
+        $scope.edit = function(Id,name,email,fees,batch){
+            $scope.Name = name;
+            $scope.Email = email;
+            $scope.Fees = fees;
+            $scope.Batch = batch;
+            $scope.userid = Id;
+            $scope.btntext = "update"
+        }
+    })
+    </script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  </body>
+</html>
